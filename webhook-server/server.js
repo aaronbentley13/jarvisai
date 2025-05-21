@@ -1,113 +1,81 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const fetch = require('node-fetch');
 
-// Initialize Express app
 const app = express();
 
-// CORS configuration
-const corsOptions = {
-  origin: process.env.NODE_ENV === 'production'
-    ? [process.env.FRONTEND_URL || 'https://your-domain.com']  // Update this with your frontend domain
-    : ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'],
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true
-};
-
-// Apply middleware
-app.use(cors(corsOptions));
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// Helper function to generate response using ElevenLabs API
-async function generateResponse(text) {
-  try {
-    if (!process.env.ELEVENLABS_API_KEY || !process.env.ELEVENLABS_VOICE_ID) {
-      throw new Error('ElevenLabs API key or voice ID not configured');
-    }
-
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}`,
-      {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': process.env.ELEVENLABS_API_KEY
-        },
-        body: JSON.stringify({
-          text,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.5
-          }
-        })
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`ElevenLabs API error: ${response.status}`);
-    }
-
-    const audioBuffer = await response.arrayBuffer();
-    return Buffer.from(audioBuffer);
-  } catch (error) {
-    console.error('Error generating response:', error);
-    throw error;
-  }
+// Helper function to generate AI response
+async function generateAIResponse(message) {
+  // This is a simple response. You can integrate with other AI services here
+  const responses = [
+    "I'm JARVIS, your AI assistant. I'm here to help you with any tasks or questions you might have.",
+    "Hello! I'm here to assist you. What can I help you with today?",
+    "Greetings! I'm JARVIS, your personal AI assistant. How may I be of service?",
+    "I'm here and ready to help. What would you like to know?",
+    "Hello! I'm processing your request and I'm here to assist you."
+  ];
+  return responses[Math.floor(Math.random() * responses.length)];
 }
 
 // Webhook endpoint
 app.post('/api/chat', async (req, res) => {
+  console.log('Incoming request:', {
+    method: req.method,
+    path: req.path,
+    headers: req.headers,
+    body: req.body
+  });
+
   try {
-    console.log('Received webhook request');
     const { message } = req.body;
     
     if (!message) {
-      return res.status(400).json({
-        error: 'Message is required',
-        success: false
+      return res.status(400).json({ 
+        success: false,
+        error: 'Message is required'
       });
     }
 
-    // Generate audio response
-    const audioBuffer = await generateResponse(message);
-    
-    // Send audio response
-    res.set({
-      'Content-Type': 'audio/mpeg',
-      'Content-Length': audioBuffer.length
-    });
-    res.send(audioBuffer);
+    console.log('Received webhook request');
+    console.log('Request body:', req.body);
+    console.log('Extracted message:', message);
 
+    // Generate AI response
+    const response = await generateAIResponse(message);
+    console.log('Generated response:', response);
+
+    // Send response
+    res.json({
+      success: true,
+      response
+    });
   } catch (error) {
-    console.error('Error processing webhook:', error);
-    res.status(500).json({
-      error: error.message,
-      success: false
+    console.error('Error processing request:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Error processing request',
+      details: error.message
     });
   }
 });
 
-// Test endpoint
-app.get('/api/test', (req, res) => {
-  res.json({ status: 'Webhook server is running with ElevenLabs!' });
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok'
+  });
 });
 
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-  const port = process.env.PORT || 3001;
-  app.listen(port, () => {
-    if (!process.env.ELEVENLABS_API_KEY) {
-      console.warn('WARNING: ELEVENLABS_API_KEY environment variable is not set');
-    }
-    if (!process.env.ELEVENLABS_VOICE_ID) {
-      console.warn('WARNING: ELEVENLABS_VOICE_ID environment variable is not set');
-    }
-    console.log(`Webhook server running at http://localhost:${port}`);
-  });
-}
+// Start server
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Webhook server running at http://localhost:${PORT}`);
+  console.log('Waiting for requests...');
+});
 
 // Export for serverless
 module.exports = app; 

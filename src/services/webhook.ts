@@ -1,8 +1,9 @@
 import { toast } from 'sonner';
 
 interface WebhookResponse {
-  audioUrl: string;
   success: boolean;
+  response?: string;
+  error?: string;
 }
 
 // Webhook server URL - dynamically set based on environment
@@ -20,7 +21,6 @@ export const sendToWebhook = async (message: string): Promise<WebhookResponse> =
       },
       body: JSON.stringify({ 
         message,
-        // You can add additional context or metadata here
         timestamp: new Date().toISOString(),
         source: 'jarvis-ai'
       }),
@@ -29,22 +29,18 @@ export const sendToWebhook = async (message: string): Promise<WebhookResponse> =
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
     }
-    
-    // Get audio blob from response
-    const audioBlob = await response.blob();
-    const audioUrl = URL.createObjectURL(audioBlob);
-    
+
+    const data = await response.json();
     return {
-      audioUrl,
-      success: true
+      success: true,
+      response: data.response
     };
-    
   } catch (error) {
     console.error('Error sending message to API:', error);
     toast.error('Error sending message to API');
     return {
-      audioUrl: '',
-      success: false
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
 };

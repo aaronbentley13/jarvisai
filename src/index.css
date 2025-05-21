@@ -1,39 +1,38 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 252 62% 54%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
   }
 }
 
@@ -62,7 +61,7 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-secondary/30 backdrop-blur-sm border border-white/10 rounded-lg;
+    @apply bg-[#112240]/30 backdrop-blur-sm;
   }
   
   .message-user {
@@ -99,32 +98,16 @@
   .typing-indicator span:nth-child(3) {
     animation-delay: 0.4s;
   }
-  
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-5px);
-    }
-  }
 
-  .jarvis-logo-container {
-    position: relative;
-    transform-style: preserve-3d;
-    perspective: 1000px;
-  }
-
-  @keyframes pulse-slow {
-    0% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.7;
-    }
-    100% {
-      opacity: 0.3;
-    }
+  .bg-scan-lines {
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(100, 255, 218, 0.05) 50%,
+      transparent 100%
+    );
+    background-size: 100% 4px;
+    animation: scan 10s linear infinite;
   }
 }
 
@@ -170,4 +153,104 @@
       transform: translate(0);
     }
   }
+
+  @keyframes scan {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100vh);
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.1;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.95);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0.2;
+    }
+  }
+}
+
+.animate-scan {
+  animation: scan 3s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-glitch {
+  animation: glitch 1s linear infinite;
+}
+
+/* Custom styles for ElevenLabs widget */
+elevenlabs-convai {
+  --elevenlabs-widget-background: transparent !important;
+  --elevenlabs-widget-border: 1px solid rgba(100, 255, 218, 0.2) !important;
+  --elevenlabs-widget-font-family: monospace !important;
+  --elevenlabs-widget-message-bubble-ai-background: rgba(17, 34, 64, 0.8) !important;
+  --elevenlabs-widget-message-bubble-ai-color: #64ffda !important;
+  --elevenlabs-widget-message-bubble-user-background: rgba(100, 255, 218, 0.1) !important;
+  --elevenlabs-widget-message-bubble-user-color: #8892b0 !important;
+  --elevenlabs-widget-input-background: rgba(17, 34, 64, 0.5) !important;
+  --elevenlabs-widget-input-color: #64ffda !important;
+  --elevenlabs-widget-input-placeholder-color: #8892b0 !important;
+  --elevenlabs-widget-button-background: #64ffda !important;
+  --elevenlabs-widget-button-color: #112240 !important;
+  --elevenlabs-widget-button-hover-background: #9EFFEB !important;
+  --elevenlabs-widget-button-hover-color: #0A192F !important;
+  --elevenlabs-widget-button-border: none !important;
+  --elevenlabs-widget-button-border-radius: 8px !important;
+  --elevenlabs-widget-button-font-family: monospace !important;
+  --elevenlabs-widget-button-font-size: 14px !important;
+  --elevenlabs-widget-button-font-weight: 600 !important;
+  --elevenlabs-widget-button-text-transform: uppercase !important;
+  --elevenlabs-widget-button-letter-spacing: 1px !important;
+  --elevenlabs-widget-button-padding: 12px 24px !important;
+  --elevenlabs-widget-button-box-shadow: 0 0 15px rgba(100, 255, 218, 0.3) !important;
+  --elevenlabs-widget-button-transition: all 0.3s ease !important;
+}
+
+/* Hide the "Need help?" text */
+elevenlabs-convai::part(help-text) {
+  display: none !important;
 }
